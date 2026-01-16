@@ -1,0 +1,606 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { ShoppingBag, Menu, X, ArrowRight, ArrowUpRight, Play, MapPin, Phone, Instagram, Twitter, Facebook, Check } from 'lucide-react';
+import { COLLECTIONS, PRODUCTS, HERO_VIDEO } from './constants';
+import StylistChat from './components/StylistChat';
+import TextureOverlay from './components/AdirePattern';
+import CartDrawer from './components/CartDrawer';
+import MobileMenu from './components/MobileMenu';
+import { Product, CartItem } from './types';
+
+// --- UTILS ---
+
+const useScrollAnimation = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setIsVisible(true);
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+};
+
+const formatCurrency = (amount: number) => {
+  return `₦${amount.toLocaleString()}`;
+};
+
+// --- COMPONENTS ---
+
+interface NavbarProps {
+  cartCount: number;
+  onOpenCart: () => void;
+  onOpenMenu: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ cartCount, onOpenCart, onOpenMenu }) => {
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > window.innerHeight - 80);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  let navStyles = "";
+  if (isHome) {
+    if (scrolled) {
+      navStyles = "bg-black text-white py-4 shadow-2xl";
+    } else {
+      navStyles = "bg-white/90 backdrop-blur-md text-black py-6 shadow-sm";
+    }
+  } else {
+    navStyles = "bg-white text-atmos-dark py-6 border-b border-gray-100";
+  }
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 transition-all duration-700 ease-in-out ${navStyles}`}>
+      <div className="flex items-center gap-12">
+        <Link to="/" className="text-2xl font-serif italic tracking-tight font-bold">Atmos.</Link>
+        <div className="hidden md:flex items-center gap-8">
+          <Link to="/collections" className="text-[10px] font-bold uppercase tracking-[0.2em] hover:opacity-60 transition-opacity">Collections</Link>
+          <Link to="/maison" className="text-[10px] font-bold uppercase tracking-[0.2em] hover:opacity-60 transition-opacity">Maison</Link>
+          <Link to="/adire" className="text-[10px] font-bold uppercase tracking-[0.2em] hover:opacity-60 transition-opacity">Adire</Link>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-6">
+        <button onClick={onOpenCart} className="relative group p-2">
+          <ShoppingBag size={20} className="group-hover:scale-110 transition-transform" />
+          {cartCount > 0 && (
+            <span className={`absolute -top-1 -right-1 w-5 h-5 text-[9px] font-bold flex items-center justify-center rounded-full transition-all duration-300 scale-110 shadow-lg ${scrolled && isHome ? 'bg-white text-black' : 'bg-atmos-indigo text-white'}`}>
+              {cartCount}
+            </span>
+          )}
+        </button>
+        <button onClick={onOpenMenu} className="p-2 hover:bg-black/5 rounded-full md:hidden">
+          <Menu size={20} />
+        </button>
+        <div className={`hidden md:block h-6 w-[1px] opacity-20 mx-2 ${scrolled && isHome ? 'bg-white' : 'bg-current'}`}></div>
+        <Link to="/journal" className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] hover:opacity-60">Journal</Link>
+      </div>
+    </nav>
+  );
+};
+
+interface ProductCardProps {
+  product: Product;
+  index: number;
+  onAddToCart?: (product: Product) => void;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ product, index, onAddToCart }) => {
+  const { ref, isVisible } = useScrollAnimation();
+
+  return (
+    <div ref={ref} className={`group ${isVisible ? 'animate-fade-up' : 'opacity-0'}`} style={{ animationDelay: `${index * 0.1}s` }}>
+      <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-atmos-accent/20 cursor-pointer clip-image transition-all duration-700">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        {onAddToCart && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart(product);
+            }}
+            className="absolute bottom-6 left-6 right-6 py-4 bg-white text-atmos-dark rounded-full flex items-center justify-center gap-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 shadow-xl hover:bg-atmos-indigo hover:text-white z-20"
+          >
+            <ShoppingBag size={18} />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Add to Bag</span>
+          </button>
+        )}
+      </div>
+      <div className="flex justify-between items-start px-1">
+        <div>
+          <h3 className="font-serif text-xl mb-1">{product.name}</h3>
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">{product.category}</p>
+        </div>
+        <span className="font-medium text-lg">{formatCurrency(product.price)}</span>
+      </div>
+    </div>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="bg-atmos-dark text-atmos-light pt-24 pb-12 px-8 md:px-12">
+      <div className="max-w-[1440px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
+          <div className="md:col-span-2">
+            <span className="font-serif italic text-3xl mb-8 block">Atmos.</span>
+            <p className="max-w-xs text-atmos-accent/40 text-sm leading-relaxed mb-12">
+              A dialogue between heritage and the modern silhouette. Crafted in Ilorin, curated for the world.
+            </p>
+            <div className="flex gap-4">
+              <input type="email" placeholder="Inquire with us..." className="bg-transparent border-b border-atmos-accent/20 py-2 text-sm focus:outline-none focus:border-white w-full max-w-xs transition-colors" />
+              <button className="p-2 hover:scale-110 transition-transform">
+                <ArrowRight size={20} />
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-8 text-atmos-accent/30">Explore</h4>
+            <ul className="space-y-4 text-sm">
+              <li><Link to="/collections" className="hover:text-white transition-colors">Collections</Link></li>
+              <li><Link to="/maison" className="hover:text-white transition-colors">The Maison</Link></li>
+              <li><Link to="/adire" className="hover:text-white transition-colors">The Adire Process</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-8 text-atmos-accent/30">Connect</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              <li><a href="https://wa.me/2348069813105" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp Atelier</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Instagram</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Inquiries</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-atmos-accent/10 text-[10px] font-bold uppercase tracking-[0.2em] text-atmos-accent/20 gap-8">
+          <span>© 2024 Atmos Vestiaty</span>
+          <div className="flex gap-8">
+            <span>Privacy</span>
+            <span>Terms</span>
+          </div>
+          <div className="flex gap-4">
+            <Facebook size={14} />
+            <Twitter size={14} />
+            <Instagram size={14} />
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+// --- PAGES ---
+
+const HomePage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAddToCart }) => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  return (
+    <div className="min-h-screen">
+      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-110"
+        >
+          <source src='public/vid.mp4' type="video/mp4" />
+        </video>
+
+        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70"></div>
+
+        <div className="relative z-10 text-center px-6 animate-fade-in pt-20">
+          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-atmos-accent/80 mb-8 block">New Collection Drop</span>
+          <h1 className="font-serif italic text-6xl md:text-[10rem] text-white leading-[0.9] tracking-tighter mb-12 drop-shadow-2xl">
+            Atmos <br /> vestiary.
+          </h1>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+            <Link
+              to="/collections"
+              className="px-12 py-5 bg-white text-atmos-dark rounded-full text-xs font-bold uppercase tracking-[0.2em] hover:bg-atmos-indigo hover:text-white transition-all transform hover:scale-105 shadow-2xl"
+            >
+              Explore Collection
+            </Link>
+            <button className="group flex items-center gap-4 text-white hover:opacity-70 transition-opacity">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">The Process</span>
+              <div className="w-10 h-10 border border-white/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Play size={14} fill="white" />
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div className="absolute bottom-12 left-8 md:left-12 flex items-center gap-4 text-white/40">
+          <MapPin size={14} />
+          <span className="text-[9px] font-bold uppercase tracking-widest">Agba Dam Area, Ilorin, NG</span>
+        </div>
+      </section>
+
+      <section className="py-32 px-8 md:px-12 bg-atmos-light">
+        <div className="max-w-[1440px] mx-auto">
+          <div className="mb-24 flex flex-col md:flex-row justify-between items-baseline gap-8">
+            <div className="max-w-xl animate-fade-up">
+              <h2 className="text-4xl md:text-6xl font-serif italic mb-8">Curated Silhouettes.</h2>
+              <p className="text-gray-500 text-lg leading-relaxed font-light">
+                Each piece is a testament to the patient art of indigo dyeing,
+                sourced from our ancestral dye pits in Kwara State.
+              </p>
+            </div>
+            <Link to="/collections" className="text-xs font-bold uppercase tracking-[0.3em] border-b-2 border-atmos-dark pb-2 hover:opacity-50 transition-all">
+              All Products
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-20">
+            {PRODUCTS.map((p, idx) => (
+              <ProductCard key={p.id} product={p} index={idx} onAddToCart={onAddToCart} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-48 px-8 md:px-12 bg-white overflow-hidden">
+        <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+          <div className="relative animate-fade-up">
+            <div className="aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl">
+              <img src={COLLECTIONS[0].image} className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute -bottom-12 -right-12 w-64 h-80 rounded-[2rem] overflow-hidden shadow-2xl hidden md:block animate-scale-in">
+              <img src={COLLECTIONS[1].image} className="w-full h-full object-cover" />
+            </div>
+          </div>
+          <div className="space-y-12 animate-fade-up">
+            <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-atmos-indigo">The Maison</span>
+            <h2 className="text-5xl md:text-7xl font-serif italic leading-[1.1]">
+              From the dye pits of Agba Dam Area to your skin.
+            </h2>
+            <p className="text-gray-500 text-xl font-light leading-relaxed max-w-lg">
+              Our atelier is more than a workshop; it's a sanctuary of heritage.
+              Located behind Ebenezer High School, we breathe new life into
+              ancient resist-dye techniques.
+            </p>
+            <Link
+              to="/maison"
+              className="inline-flex items-center gap-4 text-atmos-dark group"
+            >
+              <div className="w-16 h-16 rounded-full bg-atmos-accent flex items-center justify-center group-hover:bg-atmos-indigo group-hover:text-white transition-colors duration-500">
+                <ArrowUpRight size={24} />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Our Story</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const MaisonPage = () => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+  return (
+    <div className="pt-32 pb-24 px-8 md:px-12 bg-atmos-light min-h-screen">
+      <div className="max-w-[1440px] mx-auto text-center animate-fade-up">
+        <h1 className="text-7xl md:text-9xl font-serif italic mb-12">The Maison.</h1>
+        <div className="aspect-video rounded-[3rem] overflow-hidden shadow-2xl mb-24 redscale hover:red-scale-0 transition-all duration-1000">
+          <img src="/shop.jpeg" className="w-full h-full object-cover" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-24 text-left max-w-5xl mx-auto">
+          <div className="space-y-8">
+            <h2 className="text-4xl font-serif">Atmos Base</h2>
+            <p className="text-gray-500 leading-relaxed text-lg font-light">
+              Atmos Vestiaty is rooted in Ilorin, Nigeria. Our physical atelier
+              is located behind Ebenezer High School, Agba Dam Area. This proximity
+              to traditional artisans allows us to preserve the soul of Adire.
+            </p>
+          </div>
+          <div className="space-y-8">
+            <h2 className="text-4xl font-serif">Concierge</h2>
+            <p className="text-gray-500 leading-relaxed text-lg font-light">
+              For bespoke inquiries and atelier visits, our concierge is available
+              via WhatsApp at +234 806 981 3105 or +234 803 225 0283.
+            </p>
+            <div className="flex gap-4 p-8 bg-white rounded-3xl shadow-sm border border-gray-100">
+              <Phone size={24} className="text-atmos-indigo" />
+              <div>
+                <h4 className="font-bold text-xs uppercase tracking-widest mb-1">Direct Line</h4>
+                <p className="text-gray-400 text-sm">Open 10:00 - 18:00 WAT</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CollectionsPage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAddToCart }) => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+  const [filter, setFilter] = useState('All');
+  const categories = ['All', 'Atelier', 'Ready-to-Wear', 'Accessories'];
+  const filteredProducts = filter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
+
+  return (
+    <div className="pt-40 pb-32 px-8 md:px-12 bg-atmos-light min-h-screen">
+      <div className="max-w-[1440px] mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-baseline mb-24 gap-8 border-b border-gray-200 pb-12">
+          <h1 className="text-7xl font-serif italic">Gallery.</h1>
+          <div className="flex gap-4 md:gap-8 overflow-x-auto pb-4 scrollbar-hide w-full md:w-auto">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap transition-all px-6 py-3 rounded-full ${filter === cat ? 'bg-atmos-dark text-white' : 'text-gray-400 hover:text-atmos-dark'}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 md:gap-24">
+          {filteredProducts.map((p, idx) => (
+            <ProductCard key={p.id} product={p} index={idx} onAddToCart={onAddToCart} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const JournalPage = () => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+  return (
+    <div className="pt-40 pb-32 px-8 md:px-12 bg-white min-h-screen">
+      <div className="max-w-[1440px] mx-auto">
+        <h1 className="text-8xl font-serif italic mb-32 text-center">The Journal.</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-32">
+          {[
+            { title: "The Blue Gold: A History of Indigo", img: "/two.jpeg" },
+            { title: "Atelier Sessions: Agba Dam Area", img: "/four.jpeg" }
+          ].map((art, i) => (
+            <div key={i} className="group cursor-pointer">
+              <div className="aspect-video rounded-[3rem] overflow-hidden mb-8 shadow-xl">
+                <img src={art.img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              </div>
+              <h3 className="text-3xl font-serif hover:italic transition-all">{art.title}</h3>
+              <div className="mt-4 flex items-center gap-4 text-atmos-accent/60">
+                <span className="text-[10px] font-bold uppercase tracking-widest">Read Article</span>
+                <ArrowRight size={14} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CheckoutPage: React.FC<{ cart: CartItem[] }> = ({ cart }) => {
+  const [formData, setFormData] = useState({ fullName: '', email: '', address: '' });
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const shipping = 15000;
+  const total = subtotal + shipping;
+
+  const handleWhatsAppOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const itemsList = cart.map(item =>
+      `• ${item.name} (x${item.quantity}) - ${formatCurrency(item.price * item.quantity)}\n  Reference: ${item.image}`
+    ).join('\n\n');
+
+    const message = `*NEW ORDER: ATMOS VESTIATY*\n\n` +
+      `*CUSTOMER DETAILS*\n` +
+      `Name: ${formData.fullName}\n` +
+      `Email: ${formData.email}\n` +
+      `Address: ${formData.address}\n\n` +
+      `*ORDER ITEMS*\n${itemsList}\n\n` +
+      `*TOTAL SUMMARY*\n` +
+      `Subtotal: ${formatCurrency(subtotal)}\n` +
+      `Shipping: ${formatCurrency(shipping)}\n` +
+      `*GRAND TOTAL: ${formatCurrency(total)}*\n\n` +
+      `I would like to finalize this order with the Atelier.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/2348069813105?text=${encodedMessage}`, '_blank');
+  };
+
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen pt-48 px-12 text-center bg-atmos-light">
+        <h1 className="text-4xl font-serif italic mb-8">The bag is empty.</h1>
+        <Link to="/collections" className="text-[10px] font-bold uppercase tracking-widest underline">Back to Shop</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-40 pb-32 px-8 md:px-12 bg-atmos-light min-h-screen">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-24">
+        <div className="lg:col-span-7">
+          <h1 className="text-6xl font-serif italic mb-12">Concierge Checkout.</h1>
+          <form className="space-y-12" onSubmit={handleWhatsAppOrder}>
+            <div className="grid grid-cols-2 gap-8">
+              <div className="border-b border-atmos-accent/30 pb-4 focus-within:border-atmos-dark transition-colors">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Full Name</label>
+                <input
+                  required
+                  type="text"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className="bg-transparent w-full text-lg outline-none"
+                  placeholder="Lara Cole"
+                />
+              </div>
+              <div className="border-b border-atmos-accent/30 pb-4 focus-within:border-atmos-dark transition-colors">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Email</label>
+                <input
+                  required
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="bg-transparent w-full text-lg outline-none"
+                  placeholder="lara@domain.com"
+                />
+              </div>
+            </div>
+            <div className="border-b border-atmos-accent/30 pb-4 focus-within:border-atmos-dark transition-colors">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Shipping Address</label>
+              <input
+                required
+                type="text"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                className="bg-transparent w-full text-lg outline-none"
+                placeholder="12 Agba Dam Area, Ilorin, Nigeria"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full py-6 bg-atmos-dark text-white rounded-full text-xs font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-atmos-indigo transition-all transform hover:scale-[1.02] mt-12 flex items-center justify-center gap-3"
+            >
+              Finalize via WhatsApp Concierge — {formatCurrency(total)}
+            </button>
+          </form>
+        </div>
+        <div className="lg:col-span-5 bg-white p-12 rounded-[3rem] shadow-sm h-fit sticky top-40">
+          <h3 className="font-serif text-2xl mb-8">Summary</h3>
+          <div className="space-y-6 mb-12 overflow-y-auto max-h-[300px]">
+            {cart.map(item => (
+              <div key={item.id} className="flex justify-between items-center text-sm">
+                <div className="flex items-center gap-4">
+                  <img src={item.image} className="w-10 h-10 object-cover rounded-lg" alt={item.name} />
+                  <span className="text-gray-400">{item.name} x{item.quantity}</span>
+                </div>
+                <span className="font-medium">{formatCurrency(item.price * item.quantity)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-gray-100 pt-8 space-y-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Atelier Courier</span>
+              <span className="font-medium">{formatCurrency(shipping)}</span>
+            </div>
+            <div className="flex justify-between items-end pt-4">
+              <span className="text-[10px] font-bold uppercase tracking-widest">Total</span>
+              <span className="text-4xl font-serif italic">{formatCurrency(total)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- APP ROOT ---
+
+function App() {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string, visible: boolean }>({ message: "", visible: false });
+
+  const addToCart = (product: Product) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+
+    setToast({ message: `${product.name} added to bag`, visible: true });
+    setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
+  };
+
+  const updateQuantity = (id: string, delta: number) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        return { ...item, quantity: Math.max(1, item.quantity + delta) };
+      }
+      return item;
+    }));
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  return (
+    <Router>
+      <div className="flex flex-col min-h-screen relative bg-atmos-light text-atmos-dark selection:bg-atmos-indigo selection:text-white overflow-x-hidden">
+        <TextureOverlay className="fixed inset-0 z-0 opacity-10" />
+
+        <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 ${toast.visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8 pointer-events-none'}`}>
+          <div className="bg-black text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 backdrop-blur-xl bg-black/80">
+            <Check size={18} className="text-green-400" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{toast.message}</span>
+            <button onClick={() => setIsCartOpen(true)} className="ml-4 pl-4 border-l border-white/20 text-white/60 hover:text-white transition-colors text-[9px] uppercase tracking-widest">View Bag</button>
+          </div>
+        </div>
+
+        <div className="relative z-10 flex flex-col min-h-screen">
+          <Navbar
+            cartCount={cartCount}
+            onOpenCart={() => setIsCartOpen(true)}
+            onOpenMenu={() => setIsMobileMenuOpen(true)}
+          />
+
+          <CartDrawer
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            items={cart}
+            onUpdateQuantity={updateQuantity}
+            onRemove={removeFromCart}
+          />
+
+          <MobileMenu
+            isOpen={isMobileMenuOpen}
+            onClose={() => setIsMobileMenuOpen(false)}
+          />
+
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<HomePage onAddToCart={addToCart} />} />
+              <Route path="/maison" element={<MaisonPage />} />
+              <Route path="/collections" element={<CollectionsPage onAddToCart={addToCart} />} />
+              <Route path="/journal" element={<JournalPage />} />
+              <Route path="/checkout" element={<CheckoutPage cart={cart} />} />
+              <Route path="*" element={<HomePage onAddToCart={addToCart} />} />
+            </Routes>
+          </main>
+
+          <Footer />
+          <StylistChat />
+        </div>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
