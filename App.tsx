@@ -87,7 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, onOpenCart, onOpenMenu }) =>
         <button onClick={onOpenMenu} className="p-2 hover:bg-black/5 rounded-full md:hidden">
           <Menu size={20} />
         </button>
-        <div className={`hidden md:block h-6 w-[1px] opacity-20 mx-2 ${scrolled && isHome ? 'bg-white' : 'bg-current'}`}></div>
+        <div className={`hidden md:block h-6 w-px opacity-20 mx-2 ${scrolled && isHome ? 'bg-white' : 'bg-current'}`}></div>
         <Link to="/journal" className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] hover:opacity-60">Journal</Link>
       </div>
     </nav>
@@ -105,7 +105,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index, onAddToCart }
 
   return (
     <div ref={ref} className={`group ${isVisible ? 'animate-fade-up' : 'opacity-0'}`} style={{ animationDelay: `${index * 0.1}s` }}>
-      <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-atmos-accent/20 cursor-pointer clip-image transition-all duration-700">
+      <div className="relative aspect-3/4 overflow-hidden mb-6 bg-atmos-accent/20 cursor-pointer clip-image transition-all duration-700">
         <img
           src={product.image}
           alt={product.name}
@@ -138,51 +138,68 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index, onAddToCart }
 
 const Footer = () => {
   return (
-    <footer className="bg-atmos-dark text-atmos-light pt-24 pb-12 px-8 md:px-12">
-      <div className="max-w-[1440px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
-          <div className="md:col-span-2">
-            <span className="font-serif italic text-3xl mb-8 block">Atmos.</span>
-            <p className="max-w-xs text-atmos-accent/40 text-sm leading-relaxed mb-12">
-              A dialogue between heritage and the modern silhouette. Crafted in Ilorin, curated for the world.
+    <footer className="bg-black text-white pt-32 pb-16 px-6 md:px-24 border-t border-white/5">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
+
+          {/* Brand Section */}
+          <div className="md:col-span-5">
+            <span className="font-serif italic text-4xl mb-8 block tracking-tighter">Atmos.</span>
+            <p className="max-w-sm text-gray-400 text-sm leading-relaxed mb-12 font-light">
+              A dialogue between heritage and the modern silhouette. <br />
+              Crafted in Ilorin, curated for the world.
             </p>
-            <div className="flex gap-4">
-              <input type="email" placeholder="Inquire with us..." className="bg-transparent border-b border-atmos-accent/20 py-2 text-sm focus:outline-none focus:border-white w-full max-w-xs transition-colors" />
-              <button className="p-2 hover:scale-110 transition-transform">
-                <ArrowRight size={20} />
+
+            <div className="relative group max-w-sm">
+              <input
+                type="email"
+                placeholder="JOIN THE MAISON"
+                className="bg-transparent border-b border-white/20 py-3 text-[10px] tracking-[0.3em] uppercase focus:outline-none focus:border-white w-full transition-all duration-500 placeholder:text-gray-600"
+              />
+              <button className="absolute right-0 top-1/2 -translate-y-1/2 p-2 opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-500">
+                <ArrowRight size={18} strokeWidth={1} />
               </button>
             </div>
           </div>
 
-          <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-8 text-atmos-accent/30">Explore</h4>
-            <ul className="space-y-4 text-sm">
-              <li><Link to="/collections" className="hover:text-white transition-colors">Collections</Link></li>
-              <li><Link to="/maison" className="hover:text-white transition-colors">The Maison</Link></li>
-              <li><Link to="/adire" className="hover:text-white transition-colors">The Adire Process</Link></li>
+          {/* Spacing Column */}
+          <div className="hidden md:block md:col-span-1"></div>
+
+          {/* Links Section 1 */}
+          <div className="md:col-span-3">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] mb-10 text-gray-500">Explore</h4>
+            <ul className="space-y-5 text-[13px] font-light">
+              <li><Link to="/collections" className="text-gray-400 hover:text-white transition-colors duration-300">Collections</Link></li>
+              <li><Link to="/maison" className="text-gray-400 hover:text-white transition-colors duration-300">The Maison</Link></li>
+              <li><Link to="/adire" className="text-gray-400 hover:text-white transition-colors duration-300">The Adire Process</Link></li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-8 text-atmos-accent/30">Connect</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li><a href="https://wa.me/2348069813105" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp Atelier</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Instagram</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Inquiries</a></li>
+          {/* Links Section 2 */}
+          <div className="md:col-span-3">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] mb-10 text-gray-500">Connect</h4>
+            <ul className="space-y-5 text-[13px] font-light">
+              <li><a href="https://wa.me/2348069813105" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-300">WhatsApp Atelier</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">Instagram</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">Inquiries</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-atmos-accent/10 text-[10px] font-bold uppercase tracking-[0.2em] text-atmos-accent/20 gap-8">
-          <span>© 2024 Atmos Vestiaty</span>
-          <div className="flex gap-8">
-            <span>Privacy</span>
-            <span>Terms</span>
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5 gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <span className="text-[9px] tracking-[0.4em] uppercase text-gray-600">© 2024 Atmos Vestiaty</span>
+            <div className="flex gap-8 text-[9px] tracking-[0.4em] uppercase text-gray-600">
+              <span className="cursor-pointer hover:text-white transition-colors">Privacy</span>
+              <span className="cursor-pointer hover:text-white transition-colors">Terms</span>
+            </div>
           </div>
-          <div className="flex gap-4">
-            <Facebook size={14} />
-            <Twitter size={14} />
-            <Instagram size={14} />
+
+          <div className="flex gap-6 text-gray-500">
+            <Facebook size={16} strokeWidth={1} className="hover:text-white transition-colors cursor-pointer" />
+            <Twitter size={16} strokeWidth={1} className="hover:text-white transition-colors cursor-pointer" />
+            <Instagram size={16} strokeWidth={1} className="hover:text-white transition-colors cursor-pointer" />
           </div>
         </div>
       </div>
@@ -205,11 +222,11 @@ const HomePage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAddToCart
           playsInline
           className="absolute inset-0 w-full h-full object-cover opacity-60 scale-110"
         >
-          <source src='public/vid.mp4' type="video/mp4" />
+          <source src='/vid.mp4' type="video/mp4" />
         </video>
 
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/70"></div>
 
         <div className="relative z-10 text-center px-6 animate-fade-in pt-20">
           <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-atmos-accent/80 mb-8 block">New Collection Drop</span>
@@ -239,7 +256,7 @@ const HomePage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAddToCart
       </section>
 
       <section className="py-32 px-8 md:px-12 bg-atmos-light">
-        <div className="max-w-[1440px] mx-auto">
+        <div className="max-w-360 mx-auto">
           <div className="mb-24 flex flex-col md:flex-row justify-between items-baseline gap-8">
             <div className="max-w-xl animate-fade-up">
               <h2 className="text-4xl md:text-6xl font-serif italic mb-8">Curated Silhouettes.</h2>
@@ -262,12 +279,12 @@ const HomePage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAddToCart
       </section>
 
       <section className="py-48 px-8 md:px-12 bg-white overflow-hidden">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+        <div className="max-w-360 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
           <div className="relative animate-fade-up">
-            <div className="aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl">
+            <div className="aspect-4/5 rounded-[3rem] overflow-hidden shadow-2xl">
               <img src={COLLECTIONS[0].image} className="w-full h-full object-cover" />
             </div>
-            <div className="absolute -bottom-12 -right-12 w-64 h-80 rounded-[2rem] overflow-hidden shadow-2xl hidden md:block animate-scale-in">
+            <div className="absolute -bottom-12 -right-12 w-64 h-80 rounded-4xl overflow-hidden shadow-2xl hidden md:block animate-scale-in">
               <img src={COLLECTIONS[1].image} className="w-full h-full object-cover" />
             </div>
           </div>
@@ -301,7 +318,7 @@ const MaisonPage = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <div className="pt-32 pb-24 px-8 md:px-12 bg-atmos-light min-h-screen">
-      <div className="max-w-[1440px] mx-auto text-center animate-fade-up">
+      <div className="max-w-360 mx-auto text-center animate-fade-up">
         <h1 className="text-7xl md:text-9xl font-serif italic mb-12">The Maison.</h1>
         <div className="aspect-video rounded-[3rem] overflow-hidden shadow-2xl mb-24 redscale hover:red-scale-0 transition-all duration-1000">
           <img src="/shop.jpeg" className="w-full h-full object-cover" />
@@ -343,7 +360,7 @@ const CollectionsPage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAd
 
   return (
     <div className="pt-40 pb-32 px-8 md:px-12 bg-atmos-light min-h-screen">
-      <div className="max-w-[1440px] mx-auto">
+      <div className="max-w-360 mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-baseline mb-24 gap-8 border-b border-gray-200 pb-12">
           <h1 className="text-7xl font-serif italic">Gallery.</h1>
           <div className="flex gap-4 md:gap-8 overflow-x-auto pb-4 scrollbar-hide w-full md:w-auto">
@@ -373,7 +390,7 @@ const JournalPage = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <div className="pt-40 pb-32 px-8 md:px-12 bg-white min-h-screen">
-      <div className="max-w-[1440px] mx-auto">
+      <div className="max-w-360 mx-auto">
         <h1 className="text-8xl font-serif italic mb-32 text-center">The Journal.</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-32">
           {[
@@ -488,7 +505,7 @@ const CheckoutPage: React.FC<{ cart: CartItem[] }> = ({ cart }) => {
         </div>
         <div className="lg:col-span-5 bg-white p-12 rounded-[3rem] shadow-sm h-fit sticky top-40">
           <h3 className="font-serif text-2xl mb-8">Summary</h3>
-          <div className="space-y-6 mb-12 overflow-y-auto max-h-[300px]">
+          <div className="space-y-6 mb-12 overflow-y-auto max-h-75">
             {cart.map(item => (
               <div key={item.id} className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-4">
@@ -556,8 +573,8 @@ function App() {
       <div className="flex flex-col min-h-screen relative bg-atmos-light text-atmos-dark selection:bg-atmos-indigo selection:text-white overflow-x-hidden">
         <TextureOverlay className="fixed inset-0 z-0 opacity-10" />
 
-        <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 ${toast.visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8 pointer-events-none'}`}>
-          <div className="bg-black text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 backdrop-blur-xl bg-black/80">
+        <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-100 transition-all duration-700 ${toast.visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8 pointer-events-none'}`}>
+          <div className=" text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 backdrop-blur-xl bg-black/80">
             <Check size={18} className="text-green-400" />
             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{toast.message}</span>
             <button onClick={() => setIsCartOpen(true)} className="ml-4 pl-4 border-l border-white/20 text-white/60 hover:text-white transition-colors text-[9px] uppercase tracking-widest">View Bag</button>
@@ -584,7 +601,7 @@ function App() {
             onClose={() => setIsMobileMenuOpen(false)}
           />
 
-          <main className="flex-grow">
+          <main className="grow">
             <Routes>
               <Route path="/" element={<HomePage onAddToCart={addToCart} />} />
               <Route path="/maison" element={<MaisonPage />} />
