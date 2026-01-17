@@ -344,7 +344,7 @@ const MaisonPage = () => {
             </p>
           </div>
           <div className="space-y-8">
-            <h2 className="text-4xl font-serif">Concierge</h2>
+            <h2 className="text-4xl font-serif">rge</h2>
             <p className="text-gray-500 leading-relaxed text-lg font-light">
               For bespoke inquiries and atelier visits, our concierge is available
               via WhatsApp at +234 806 981 3105 or +234 803 225 0283.
@@ -469,7 +469,7 @@ const CheckoutPage: React.FC<{ cart: CartItem[] }> = ({ cart }) => {
     <div className="pt-40 pb-32 px-8 md:px-12 bg-atmos-light min-h-screen">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-24">
         <div className="lg:col-span-7">
-          <h1 className="text-6xl font-serif italic mb-12">Concierge Checkout.</h1>
+          <h1 className="text-6xl font-serif italic mb-12 text-black">Concierge Checkout.</h1>
           <form className="space-y-12" onSubmit={handleWhatsAppOrder}>
             <div className="grid grid-cols-2 gap-8">
               <div className="border-b border-atmos-accent/30 pb-4 focus-within:border-atmos-dark transition-colors">
@@ -508,7 +508,7 @@ const CheckoutPage: React.FC<{ cart: CartItem[] }> = ({ cart }) => {
             </div>
             <button
               type="submit"
-              className="w-full py-6 bg-atmos-dark text-white rounded-full text-xs font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-atmos-indigo transition-all transform hover:scale-[1.02] mt-12 flex items-center justify-center gap-3"
+              className="w-full py-6 bg-atmos-dark text-black rounded-full text-xs font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-atmos-indigo transition-all transform hover:scale-[1.02] mt-12 flex items-center justify-center gap-3"
             >
               Finalize via WhatsApp Concierge — {formatCurrency(total)}
             </button>
