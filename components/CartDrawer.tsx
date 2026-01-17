@@ -98,7 +98,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, onUpdat
               <Link
                 to="/checkout"
                 onClick={onClose}
-                className="w-full py-4 bg-blue-200 text-red-400 rounded-full flex items-center justify-center gap-2 font-medium hover:bg-indigo-900 transition-colors group"
+                className="w-full py-4 bg-black- text-white rounded-full flex items-center justify-center gap-2 font-medium hover:bg-indigo-900 transition-colors group"
               >
                 Proceed to Checkout <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>

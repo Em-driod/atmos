@@ -118,7 +118,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index, onAddToCart }
               e.stopPropagation();
               onAddToCart(product);
             }}
-            className="absolute bottom-6 left-6 right-6 py-4 bg-white text-atmos-dark rounded-full flex items-center justify-center gap-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 shadow-xl hover:bg-atmos-indigo hover:text-white z-20"
+            className="absolute bottom-6 left-6 right-6 py-4 bg-white text-atmos-dark rounded-full flex items-center justify-center gap-3 transition-all duration-500 shadow-xl hover:bg-atmos-indigo hover:text-white z-20
+            opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0"
           >
             <ShoppingBag size={18} />
             <span className="text-[10px] font-bold uppercase tracking-widest">Add to Bag</span>
