@@ -210,17 +210,28 @@ const Footer = () => {
 // --- PAGES ---
 
 const HomePage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAddToCart }) => {
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const handleVideoLoad = () => {
+    setIsVideoLoaded(true);
+  };
 
   return (
     <div className="min-h-screen">
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
+        {!isVideoLoaded && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black">
+            <div className="text-white font-serif text-xl animate-pulse">Loading Atmos...</div>
+          </div>
+        )}
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-110"
+          onCanPlay={handleVideoLoad}
+          className={`absolute inset-0 w-full h-full object-cover scale-110 transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-60' : 'opacity-0'}`}
         >
           <source src='/vid.mp4' type="video/mp4" />
         </video>
@@ -228,8 +239,8 @@ const HomePage: React.FC<{ onAddToCart: (p: Product) => void }> = ({ onAddToCart
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/70"></div>
 
-        <div className="relative z-10 text-center px-6 animate-fade-in pt-20">
-          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-atmos-accent/80 mb-8 block">New Collection Drop</span>
+        <div className={`relative z-10 text-center px-6 transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-100 animate-fade-in' : 'opacity-0'} pt-20`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white mb-8 block">New Collection Drop</span>
           <h1 className="font-serif italic text-6xl md:text-[10rem] text-white leading-[0.9] tracking-tighter mb-12 drop-shadow-2xl">
             Atmos <br /> vestiary.
           </h1>

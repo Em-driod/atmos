@@ -25,7 +25,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
       
       {/* Menu Content - Carpet Roll Animation */}
       <div className={`fixed top-0 left-0 w-full z-[90] transform transition-transform duration-1000 cubic-bezier(0.16, 1, 0.3, 1) ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="flex flex-col bg-atmos-light p-6 md:p-8 rounded-b-[2rem] shadow-2xl overflow-hidden">
+        <div className="flex flex-col bg-white p-6 md:p-8 rounded-b-[2rem] shadow-2xl overflow-hidden">
           
           {/* Header */}
           <div className="flex justify-between items-center mb-10">
