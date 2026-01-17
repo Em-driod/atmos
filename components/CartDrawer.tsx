@@ -60,7 +60,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, onUpdat
                           <X size={14} />
                         </button>
                       </div>
-                      <p className="text-xs uppercase tracking-widest text-gray-500">{item.category}</p>
+                      <p className="text-xs uppercase tracking-widest text-white">{item.category}</p>
                     </div>
 
                     <div className="flex justify-between items-end">
