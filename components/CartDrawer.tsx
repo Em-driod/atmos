@@ -94,11 +94,11 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, onUpdat
                 <span className="text-sm uppercase tracking-widest text-gray-500">Subtotal</span>
                 <span className="font-serif text-2xl">{formatCurrency(subtotal)}</span>
               </div>
-              <p className="text-xs text-gray-400 mb-6 text-center">Shipping & taxes calculated at checkout</p>
+              <p className="text-xs text-red-400 mb-6 text-center">Shipping & taxes calculated at checkout</p>
               <Link
                 to="/checkout"
                 onClick={onClose}
-                className="w-full py-4 bg-black text-white rounded-full flex items-center justify-center gap-2 font-medium hover:bg-indigo-900 transition-colors group"
+                className="w-full py-4 bg-blue-200 text-red-400 rounded-full flex items-center justify-center gap-2 font-medium hover:bg-indigo-900 transition-colors group"
               >
                 Proceed to Checkout <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
